@@ -54,30 +54,15 @@ Several menu-related elements are assigned a label using the [aria-label](https:
 <div float align=right><a href="#top">Back to Top</a></div>
 
 ## Limitations
-Unfortunately Submenu sections won't work with this menu system. For use with parent level only. If you wish to use submenu's try my other menu called ScrollingTile Menu...
-
-## FRAMEWORK VERSION 4.0+ FIXES
-Unfortunately Framework 4 at this time, cosmetically breaks the look of the menu. Below are fixes to get it working with that version of framework.
-
-1.) Uninstall the current adapt-contrib-pageLevelProgress and install my modified version of it found at: [github.com/mike-st/adapt-contrib-pageLevelProgress](https://github.com/mike-st/adapt-contrib-pageLevelProgress).
-
-2.) Add the following coding in the Custom CSS/Less Project settings:
-
-<p><strong>.menu .menu-container-inner {
-<br/>&nbsp;&nbsp;&nbsp;padding: 30px 0px 0;
-</br>}</strong></p>
-<p><strong>.menu .page-level-progress-menu-item {
-<br/>&nbsp;&nbsp;&nbsp;padding: 0px 0px 0;
-<br/>&nbsp;&nbsp;&nbsp;margin: -26px -24px 0;
-</br>}</strong></p>
-<p><strong>.menu-header-inner {
-<br/>&nbsp;&nbsp;&nbsp;width: 80vw;
-<br/>&nbsp;&nbsp;&nbsp;text-align: center;
-<br/>&nbsp;&nbsp;&nbsp;margin-left: 10vw;
-</br>}</strong></p>
-
+Unfortunately Submenu sections won't work with this menu system. For use with parent level only. If you wish to use submenu's try my other menu called ScrollingTile Menu... (Disregard this if using the Framework 4 version below)
 
 [ScrollingTile Menu](https://github.com/mike-st/adapt-tilesMenu)
+
+## FRAMEWORK VERSION 4.0+ FIXES
+Unfortunately Framework 4 at this time, cosmetically breaks the look of the menu. Below is a link to the fixed version for framework 4+...
+
+Uninstall your current adapt-carousel-menu and use the Framework Version 4 fix at: [github.com/zarek3333/adapt-carousel-menu](https://github.com/zarek3333/adapt-carousel-menu).
+
 
 ----------------------------
 **Version number:**  2.0.5   
