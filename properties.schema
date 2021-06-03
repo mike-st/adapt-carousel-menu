@@ -1,64 +1,38 @@
 {
   "type": "object",
-  "$schema": "http://json-schema.org/draft-04/schema",
+  "$schema": "http://json-schema.org/draft-03/schema",
   "id": "http://jsonschema.net",
-  "$ref": "http://localhost/plugins/content/contentobject/model.schema",
+  "$ref": "http://localhost/plugins/content/menu/model.schema",
   "globals": {
-    "ariaRegion": {
-      "type": "string",
-      "required": true,
-      "default": "Menu",
-      "inputType": "Text",
-      "validators": [],
-      "translatable": true
-    },
     "durationLabel": {
       "type": "string",
-      "required": true,
-      "default": "Duration:",
+      "default": "Duration: ",
+      "title": "Duration label",
       "inputType": "Text",
-      "validators": [],
-      "translatable": true
-    },
-    "menuItem": {
-      "type": "string",
-      "required": true,
-      "default": "Menu item.",
-      "inputType": "Text",
-      "validators": [],
-      "translatable": true
-    },
-    "menuEnd": {
-      "type": "string",
-      "required": true,
-      "default": "You have reached the end of the menu.",
-      "inputType": "Text",
-      "validators": [],
       "translatable": true
     }
   },
   "properties": {
     "pluginLocations": {
-      "type":"object",
-      "required":true,
-      "properties":{
-        "config": {
-          "type":"object"
-        },
+      "type": "object",
+      "properties": {
         "course": {
-          "type":"object"
-        },
-        "contentobject": {
-          "type":"object"
-        },
-        "article": {
-          "type":"object"
-        },
-        "block": {
-          "type":"object"
-        },
-        "component": {
-          "type":"object"
+          "type": "object",
+          "properties": {
+            "_carouselMenu": {
+              "type": "object",
+              "legend": "Carousel Menu",
+              "properties": {
+                "_backgroundSrc": {
+                  "type": "string",
+                  "default": "",
+                  "title": "Menu Home Page Background source",
+                  "inputType": "Asset:image",
+                  "help": "Choose the home page background graphic"
+                }
+              }
+            }
+          }
         }
       }
     }

@@ -1,452 +1,188 @@
 define([
-    'coreJS/adapt',
-    'coreViews/menuView'
-], function(Adapt, MenuView) {
+    "core/js/views/menuView",
+    "core/js/adapt",
+    "./adapt-carousel-menuItemView",
+    "./adapt-carousel-menuItemIndicatorView"
+], function(MenuView, Adapt, CarouselMenuItemView, CarouselMenuItemIndicatorView) {
 
-    var BoxMenuView = MenuView.extend({
+    var CarouselMenuView = MenuView.extend({
 
-        postRender: function() {
-            var nthChild = 0;
-            var whatwinwidth = $( window ).width();
-            //SHOW INTRO HOME PAGE OR NOT
-            //ARROWS TO TRIIGER HOME BUTTON
-            $('.menu-home-control-left').click(function(){
-                $( '.active.nth-child-1' ).stop().animate({'left':'0px','background-position-x': ''+ whatwinwidth +'px','background-position-y': '60px'});
-                $('.nth-child-1 .numspotlink .menu-tooltip').css({'opacity':'0','-webkit-animation-name': '','animation-name': ''});
-                $('.duration-bar-home .numspothome .menu-tooltip').css({'opacity':'1','-webkit-animation-name': 'fadeInUp','animation-name': 'fadeInUp'});
-                $('.menu-item' ).removeClass('active');
-                $('.menu-header').animate({'top':'-100px','left':'0px'});
-                $('.duration-bar-home .homespot').removeClass('isDown');
-                $('.menu-item-control-right').addClass('menu-item-control-hide');
-                $('.menu-home-control-right').removeClass('menu-item-control-hide');
-                $('.menu-home-control-left').addClass('menu-item-control-hide');
-                
-                //Below addes page number in for the menu
-                $('.navpagenum').text( 'Page ' + 1 + ' of ' + nthChild );
-                $('.arianavpgnum').text( 'Page ' + 1 + ' of ' + nthChild ).attr('role','region').attr('tabindex','0').addClass('aria-label');
+        attributes: function() {
+            return _.extend(MenuView.prototype.attributes.call(this), {
+                "data-item-count": this.model.getAvailableChildModels().length+1
             });
-            $('.menu-home-control-right').click(function(){
-                $('.nth-child-1' ).stop().animate({'left':'0px','background-position-x': '0px','background-position-y': '60px'});
-                $('.menu-header').stop().animate({'top':'-100px','left':'-100%'});
-                $('.duration-bar-home .numspothome .menu-tooltip').css({'opacity':'0','-webkit-animation-name': '','animation-name': ''});
-                $('.nth-child-1' ).addClass('active');
-                $('.menu-item-control-right').removeClass('menu-item-control-hide');
-                $('.menu-home-control-right').addClass('menu-item-control-hide');
-                $('.menu-home-control-left').removeClass('menu-item-control-hide');
-                $('.duration-bar-home .homespot').addClass('isDown'); 
-                
-                //Below addes page number in for the menu
-                $('.navpagenum').text( 'Page ' + 1 + ' of ' + nthChild );
-                $('.arianavpgnum').text( 'Page ' + 1 + ' of ' + nthChild ).attr('role','region').attr('tabindex','0').addClass('aria-label');
-
-                //IF ONLY 1 OR 2 ITEMS
-                if ($('.duration-bar').length == 1) {
-                    $('.menu-item-control-right').hide();
-                };
-                if ($('.duration-bar').length == 2) {
-                    $('.menu-item-control-right').show();
-                };
-            });
-
-            $('.homespot').click( function(){
-                if ( $(this).hasClass('isDown') ) {
-                    $( '.nth-child-1 .numspotlink' ).trigger( 'click' );
-                    $( '.active.nth-child-1' ).stop().animate({'left':'0px','background-position-x': ''+ whatwinwidth +'px','background-position-y': '60px'});
-                    $('.nth-child-1 .numspotlink .menu-tooltip').css({'opacity':'0','-webkit-animation-name': '','animation-name': ''});
-                    $('.duration-bar-home .numspothome .menu-tooltip').css({'opacity':'1','-webkit-animation-name': 'fadeInUp','animation-name': 'fadeInUp'});
-                    $('.menu-item' ).removeClass('active');
-                    $('.menu-header').stop().animate({'top':'-100px','left':'0px'});
-                    $('.menu-item-control-right').addClass('menu-item-control-hide');
-                    $('.menu-home-control-right').removeClass('menu-item-control-hide');
-                    $('.menu-home-control-left').addClass('menu-item-control-hide');             
-                } else {
-                    $('.nth-child-1' ).stop().animate({'left':'0px','background-position-x': '0px','background-position-y': '60px'});
-                    $('.menu-header').stop().animate({'top':'-100px','left':'-100%'});
-                    $('.duration-bar-home .numspothome .menu-tooltip').css({'opacity':'0','-webkit-animation-name': '','animation-name': ''});
-                    $('.nth-child-1 .numspotlink .menu-tooltip').css({'opacity':'1','-webkit-animation-name': 'fadeInUp','animation-name': 'fadeInUp'});
-                    $('.nth-child-1' ).addClass('active');
-                    $('.menu-item-control-right').removeClass('menu-item-control-hide');
-                    $('.menu-home-control-right').addClass('menu-item-control-hide');
-                    $('.menu-home-control-left').removeClass('menu-item-control-hide'); 
-                }
-                $(this).toggleClass('isDown');
-                return false;
-            });
-
-            this.model.getChildren().each(function(item) {
-                if (item.get('_isAvailable')) {
-                    nthChild++;
-                    item.set("_nthChild", nthChild);
-                    this.$('.menu-container-inner').append(new BoxMenuItemView({model: item}).$el);
-                }
-            });
-        }
-
-    }, {
-        template: 'boxmenu'
-    });
-
-    var BoxMenuItemView = MenuView.extend({
-
-        events: {
-            'click button' : 'onClickMenuItemButton'
         },
 
         className: function() {
-            var nthChild = this.model.get("_nthChild");
-            return [
-                'menu-item',
-                'menu-item-' + this.model.get('_id') ,
-                this.model.get('_classes'),
-                this.model.get('_isVisited') ? 'visited' : '',
-                this.model.get('_isComplete') ? 'completed' : '',
-                this.model.get('_isLocked') ? 'locked' : '',
-                'nth-child-' + nthChild,
-                nthChild % 2 === 0 ? 'nth-child-even' : 'nth-child-odd'
-            ].join(' ');
-            
+            return MenuView.prototype.className.call(this) + " carousel-menu";
         },
 
-        preRender: function() {
-            this.model.checkCompletionStatus();
-            this.model.checkInteractionCompletionStatus();
+        events: {
+            "click .carousel-menu-item-control": "onControlClick",
+            "click .numspothome": "onHome",
+            "mouseover .numspothome": "homeOver",
+            "mouseout .numspothome": "homeOut",
+            "click .tooltips6 .skipme": "toolTip"
         },
 
         postRender: function() {
-            var graphic = this.model.get('_graphic');
-            var nthChild = this.model.get("_nthChild");
-            var totalnthchild = $('.duration-bar').length;
-            
-            var minus150per = 150 - this.model.get("_nthChild") * 100;
-            var paddingcal = 100 * this.model.get("_nthChild") - 100;
-            var add80px = this.model.get("_nthChild") * 80 - 80;
-            var add40px = 32 - totalnthchild * 40;
 
-            if (graphic && graphic.src && graphic.src.length > 0) {
-                this.$el.imageready(_.bind(function() {
-                    this.setReadyStatus();
-                }, this));
+            var item = this.getNextIncompleteItem();
+
+            this.listenTo(Adapt, {
+                "carouselMenu:setItem": this.setItem,
+                "menuView:ready": this.onReady
+            });
+
+            this.setBackgroundImage();
+            this.setUpItems();
+            this.setItem(item.id, item.index);
+            
+            // Checks if you are on Main Menu or Sub Menu
+            if ($('.navigation-back-button').hasClass('display-none')) {
+                //Do Nothing on Main Menu
+
+                //BELOW PULLS TITLE
+                var navtitle2 = $( '.carousel-menu-item[data-adapt-id="home"] .carousel-menu-item-title' ).text();
+                Adapt.offlineStorage.set('mycourseTitle', navtitle2);
+                var courseholder = Adapt.offlineStorage.get("mycourseTitle");
             } else {
-                this.setReadyStatus();
+                $('.location-menu .carousel-menu').addClass('submenu-carousel');
+                //BELOW PULLS TITLE
+                var navtitle2 = $( '.carousel-menu-item[data-adapt-id="home"] .carousel-menu-item-title' ).text();
+                Adapt.offlineStorage.set('mycourseTitle', navtitle2);
+                var courseholder = Adapt.offlineStorage.get("mycourseTitle");
             }
 
-
-
-            $('.menu-container').css({'width' : '' + nthChild + '00%','display' : 'inline-block','position' : 'relative'});
-            $('.nth-child-'+ nthChild ).css({'background-image' : 'url('+ graphic.src +')'}).attr('name', 'nth-child-' + nthChild);
-            $('.menu-item.nth-child-'+ nthChild + ' .numberspot').text('' + nthChild );
-
-            //ANIMATE SLIDER LEFT OR RIGHT
-            var count = 0;
-            var $item = $('.nth-child-'+ nthChild );
-
-            //SHOW INTRO HOME PAGE OR NOT
-            var homecal = $( window ).width() / 2 - 40;
-            var durhome = totalnthchild / 2 * 80;
-            var totaldurhome = homecal - durhome - 40;
-            var halfwaypoint = totalnthchild / 2;
-
-            $('.menu-home-control-right').removeClass('menu-item-control-hide');
-            $('.duration-bar-home').css({'margin-left': '' + totaldurhome + 'px'});
-
-            $('.duration-bar-home .homespot').hover(function(){
-                $('.numspotlink .menu-tooltip').css({'opacity':'0','-webkit-animation-name': '','animation-name': ''});
-                $('.duration-bar-home .numspothome .menu-tooltip').css({'opacity':'0','-webkit-animation-name': '','animation-name': ''});
-                $('.duration-bar-home .numspothome .menu-tooltip').css({'opacity':'1','-webkit-animation-name': 'fadeInUp','animation-name': 'fadeInUp'});
-            });
-
-            //CLICK ON CIRCLE NUMBERS SPOT LINKS FUNCTIONALITY
-            var makezer0 = nthChild-1;
-            var moveduration = makezer0 * $( window ).width() + add40px;
-            var numtotalamount = $('.menu-item').length;
-            var i = 0;
-
-            $('a.numspotlink:eq(' + makezer0 + ')').hover(function(){
-                $('.numspotlink .menu-tooltip').css({'opacity':'0','-webkit-animation-name': '','animation-name': ''});
-                $('.duration-bar-home .numspothome .menu-tooltip').css({'opacity':'0','-webkit-animation-name': '','animation-name': ''});
-                $('.nth-child-'+ nthChild + ' .numspotlink .menu-tooltip').css({'opacity':'1','-webkit-animation-name': 'fadeInUp','animation-name': 'fadeInUp'});
-                $('.tooltips6').css({'opacity':'0','-webkit-animation-name': 'fadeInUp','animation-name': 'fadeInUp'});
-                $(".tooltips6").hide();
-            });    
-
-            $('a.numspotlink:eq(' + makezer0 + ')').click(function(){      
-                $('.duration-bar-home').css('margin-left');
-                $('.duration-bar-home').animate({'margin-left': '' + totaldurhome + 'px'});
-                $('.menu-item').animate({'left':'-' + $( window ).width()*makezer0 + 'px'});
-                $('.duration-bar').css('margin-left');
-                $('.duration-bar').animate({'margin-left':'' + moveduration + 'px'});
-                $('a.menu-item-control-left').removeClass('menu-item-control-hide');
-                $('a.menu-item-control-right').removeClass('menu-item-control-hide');
-                $('a.menu-home-control-left').addClass('menu-item-control-hide');
-                $('a.menu-home-control-right').addClass('menu-item-control-hide');
-                $('.menu-item' ).removeClass('active');
-                $('.nth-child-'+ nthChild ).addClass('active');
-                $('.nth-child-'+ nthChild + ' .numspotlink .menu-tooltip').css({'opacity':'1','-webkit-animation-name': 'fadeInUp','animation-name': 'fadeInUp'});
-                $('.duration-bar-home .numspotlink .menu-tooltip').css({'opacity':'1','-webkit-animation-name': 'fadeInUp','animation-name': 'fadeInUp'});
-                $('.menu-header').stop().animate({'top':'-100px','left':'-100%'});
-                $('.duration-bar-home .homespot').addClass('isDown');
-                //Below addes page number in for the menu
-                $('.navpagenum').text( 'Page ' + nthChild + ' of ' + numtotalamount );
-                $('.arianavpgnum').text( 'Page ' + nthChild + ' of ' + numtotalamount ).attr('role','region').attr('tabindex','0').addClass('aria-label');
-            });
-
-            if ($(window).width() <= 1024) {
-                $('.nth-child-'+ nthChild + ' .menu-item-inner').css({'left' : '' + minus150per + '%', 'margin-left' : '' + add80px + 'px', 'padding-left': '' + paddingcal + '%' });
-            }else{
-                $('.nth-child-'+ nthChild + ' .menu-item-inner').css({'left' : '' + minus150per + '%', 'margin-left' : '' + add80px + 'px', 'padding-left': '40px' })
-            }
-            
-            //Hide LEFT arrow if number 1 is clicked
-            $('a.numspotlink:eq(0)').click(function(){    
-                $('a.menu-item-control-left').addClass('menu-item-control-hide');
-                $('a.menu-home-control-left').removeClass('menu-item-control-hide');
-                $('.nth-child-1' ).animate({'left':'0px','background-position-x': '0px','background-position-y': '60px'}).stop();
-
-                //IF ONLY 1 OR 2 ITEMS
-                if ($('.duration-bar').length == 1) {
-                    $('.menu-item-control-right').hide();
-                };
-                if ($('.duration-bar').length == 2) {
-                    $('.menu-item-control-right').show();
-                };
-            });
-            
-            //Hide RIGHT arrow if last number is clicked
-            $('.menu-item:last-child a.numspotlink').click(function(){      
-                $('a.menu-item-control-right').addClass('menu-item-control-hide');
-            });
-
-            //IF LESS THAN OR EQUAL TO 10 OR MORE
-            if (totalnthchild <= 10) {
-                $('.duration-bar').css({'margin-left' : add40px + 'px'});
-                $('.carouselpushLeft').css({'display' : 'none'});
-                $('.carouselpushRight').css({'display' : 'none'});
-            } else {
-                $('.carouselpushLeft').click(function(){
-                    i--
-                    $('.duration-bar').animate({'margin-left':'+=' + 80 / totalnthchild +'px'}).stop(false,true);
-                    $('.duration-bar-home').animate({'margin-left':'+=' + 80 / totalnthchild +'px'}).stop(false,true);
-                    if (halfwaypoint == i || halfwaypoint == i + 0.5 || halfwaypoint == -i || halfwaypoint == -i + 0.5) {
-                        $('.carouselpushRight').removeAttr("disabled").removeClass("disabled");
-                        $('.carouselpushLeft').attr("disabled", "disabled").addClass("disabled");
-                    } else {
-                        $('.carouselpushRight').removeAttr("disabled").removeClass("disabled");
-                        $('.carouselpushLeft').removeAttr("disabled").removeClass("disabled");
-                    }
-                });
-                $('.carouselpushRight').click(function(){
-                    i++
-                    $('.duration-bar').animate({'margin-left':'-=' + 80 / totalnthchild +'px'}).stop(false,true);
-                    $('.duration-bar-home').animate({'margin-left':'-=' + 80 / totalnthchild +'px'}).stop(false,true);
-                    if (halfwaypoint == i || halfwaypoint == i + 0.5 || halfwaypoint == -i || halfwaypoint == -i + 0.5) {
-                        $('.carouselpushLeft').removeAttr("disabled").removeClass("disabled");
-                        $('.carouselpushRight').attr("disabled", "disabled").addClass("disabled");
-                    } else {
-                        $('.carouselpushRight').removeAttr("disabled").removeClass("disabled");
-                        $('.carouselpushLeft').removeAttr("disabled").removeClass("disabled");
-                    }
-                });
-                $('a').click(function(){
-                    i = 0;
-                    $('.carouselpushRight').removeAttr("disabled").removeClass("disabled");
-                    $('.carouselpushLeft').removeAttr("disabled").removeClass("disabled");
-                });
-                $('.duration-bar').css({'margin-left' : add40px + 'px'});
-            }
-
-            //PRESS RIGHT BUTTON
-            $('.menu-item-control-right').click(function(){
-                $('.duration-bar').css('margin-left');
-                $('.duration-bar').animate({'margin-left':'+=' + $( window ).width() /totalnthchild + 'px'}).stop(false,true);
-                $item.css('left');
-                $item.animate({'left':'-=' + $( window ).width() + 'px'});
-                $('.numspotlink .menu-tooltip').css({'opacity':'0','-webkit-animation-name': '','animation-name': ''});
-                $('.duration-bar-home .homespot').addClass('isDown');
-
-                count += 1;
-                
-                //SEE WHAT PAGE YOU ARE ON
-                var seepgminus = $( window ).width();
-                var seepg = $item.css('left');
-                var seepgstring =  parseInt(seepg.replace(/px/g, ''), 10);
-                var seepgcal = seepgstring - seepgminus;
-                var seepgtotal = $( window ).width()-seepgminus*nthChild;
-                var calpagenum = 1 + count;
-
-                //Below addes page number in for the menu
-                $('.navpagenum').text( 'Page ' + calpagenum + ' of ' + nthChild );
-                $('.arianavpgnum').text( 'Page ' + calpagenum + ' of ' + nthChild ).attr('role','region').attr('tabindex','0').addClass('aria-label');
-                
-                if ((seepgcal + 'px' ==  seepgtotal + 'px')) {
-                    $('.menu-item' ).removeClass('active');
-                    $item.addClass('active');
-                }else{
-                    //alert('seepage is ' + seepgcal + ' seepgtotal is ' + seepgtotal);
-                };
-
-                //ON MOUSE MOVE SEE IF ACTIVE ON FIRST PAGE
-                var righty = $('.nth-child-1' ).css('left');
-                var caldatotal2 = $( window ).width()*nthChild;
-                if ((righty ==  '-' + caldatotal2 + 'px')) {
-                    $('.menu-item-control-left').addClass('menu-item-control-hide');
-                    $('.menu-home-control-left').removeClass('menu-item-control-hide');
-                }else{
-                    $('.menu-item-control-left').removeClass('menu-item-control-hide');
-                    $('.menu-home-control-left').addClass('menu-item-control-hide');
-                };
-
-                //IF ONLY 1 OR 2 ITEMS
-                if ($('.duration-bar').length == 1) {
-                        $('.menu-item-control-right').hide();
-                };
-                if ($('.duration-bar').length == 2) {
-                    if ((righty ==  '0px')) {
-                        $('.menu-item-control-right').hide();
-                    }
-                };
-
-                //ON MOUSE MOVE SEE IF ACTIVE ON LAST PAGE
-                var lefty = $('.nth-child-' + nthChild ).css('left');
-                var minustwo = nthChild-2;
-                var caldatotal = $( window ).width()*minustwo;
-                if ((lefty ==  '-' + caldatotal + 'px')) {
-                    $('.menu-item-control-right').addClass('menu-item-control-hide');
-                }else{
-                    $('.menu-item-control-right').removeClass('menu-item-control-hide');
-                };
-
-            });
-            //PRESS LEFT BUTTON
-            $('.menu-item-control-left').click(function(){      
-                $('.duration-bar').css('margin-left');
-                $('.duration-bar').animate({'margin-left':'-=' + $( window ).width() /totalnthchild + 'px'}).stop(false,true);
-                $item.css('left');
-                $item.animate({'left':'+=' + $( window ).width() + 'px'});
-                $('.numspotlink .menu-tooltip').css({'opacity':'0','-webkit-animation-name': '','animation-name': ''});
-                $('.nth-child-1' ).css({'background-position-x': '0px','background-position-y': '60px'});
-                $('.menu-header').stop().animate({'top':'-100px','left':'-100%'});
-                $('.duration-bar-home .homespot').addClass('isDown');
-
-
-                count -= 1;
-
-                //SEE WHAT PAGE YOU ARE ON
-                var seepgminus = $( window ).width();
-                var seepg = $item.css('left');
-                var seepgstring =  parseInt(seepg.replace(/px/g, ''), 10);
-                var seepgcal = seepgstring + seepgminus;
-                var seepgtotal = $( window ).width()-seepgminus*nthChild;
-                var calpagenum = 1 + count;
-
-                //Below addes page number in for the menu
-                $('.navpagenum').text( 'Page ' + calpagenum + ' of ' + nthChild );
-                $('.arianavpgnum').text( 'Page ' + calpagenum + ' of ' + nthChild ).attr('role','region').attr('tabindex','0').addClass('aria-label');
-                
-                if ((seepgcal + 'px' ==  seepgtotal + 'px')) {
-                    $('.menu-item' ).removeClass('active');
-                    $item.addClass('active');
-                }else{
-                    //alert('seepage is ' + seepgcal + ' seepgtotal is ' + seepgtotal);
-                };
-
-                //ON CLICK SEE IF ACTIVE ON FIRST PAGE
-                var righty = $('.nth-child-1' ).css('left');
-                var caldatotal2 = $( window ).width();
-                if ((righty ==  '-' + caldatotal2 + 'px')) {
-                    $('.menu-item-control-left').addClass('menu-item-control-hide');
-                    $('.menu-home-control-left').removeClass('menu-item-control-hide');
-                }else{
-                    $('.menu-item-control-left').removeClass('menu-item-control-hide');
-                    $('.menu-home-control-left').addClass('menu-item-control-hide');
-                };
-
-                //ON CLICK SEE IF ACTIVE ON LAST PAGE
-                var lefty = $('.nth-child-' + nthChild ).css('left');
-                var plustwo = nthChild+2;
-                var caldatotal = $( window ).width()*plustwo;
-                if ((lefty ==  '-' + caldatotal + 'px')) {
-                    $('.menu-item-control-right').addClass('menu-item-control-hide');
-                }else{
-                    $('.menu-item-control-right').removeClass('menu-item-control-hide');
-                };
-
-                //IF ONLY 1 OR 2 ITEMS
-                var ontheone = $('.nth-child-2' ).css('left');
-                if ($('.duration-bar').length == 1) {
-                        $('.menu-item-control-right').hide();
-                };
-                if ($('.duration-bar').length == 2) {
-                    if ((ontheone ==  '-' + caldatotal2 + 'px')) {
-                        $('.menu-item-control-right').show();
-                    }
-                };
-
-            });
-
-            //GET BACKGROUND TO MATCH BROWSER ON RESIZE
-            $('.menu-item' ).css({'width' : $( window ).width() + 'px', 'height' : $( window ).height() + 'px'});
-            $(window).resize(function() {
-                var resizewin = count * $( window ).width();
-                var add40px2 = 32 - nthChild * 40;
-                var calwin40px = add40px2 + resizewin;
-                var homecal2 = $( window ).width() / 2 - 40;
-                var durhome2 = totalnthchild / 2 * 80;
-                var totaldurhome2 = homecal2 - durhome2 - 40;
-                $('.menu-item' ).css({'width' : $( window ).width() + 'px', 'height' : $( window ).height() + 'px'});
-                $('.nth-child-' + nthChild ).css('left');
-                $('.menu-item' ).css({'left':'-' + resizewin + 'px'});
-                $('.duration-bar').css('margin-left');
-                $('.duration-bar').css({'margin-left':'' + calwin40px + 'px'});
-                $('.duration-bar-home').css({'margin-left': '' + totaldurhome2 + 'px'});
-                $('.nth-child-1' ).css({'background-position-x': '0px','background-position-y': '60px'});
-
-                //IF LESS THAN OR EQUAL TO 10 OR MORE
-                if (totalnthchild <= 10) {
-                    $('.carouselpushLeft').css({'display' : 'none'});
-                    $('.carouselpushRight').css({'display' : 'none'});
+            // Triggers Page 1 when Accessibility button is pressed
+            if ($('.location-menu').hasClass('accessibility')) {
+                // Checks if you are on Main Menu or Sub Menu
+                if ($('.navigation-back-button').hasClass('display-none')) {
+                    window.setTimeout(function(){
+                        $( '.carousel-menu-item:nth-child(2) .carousel-menu-item-button' ).trigger( 'click' );
+                    }, 250);
                 } else {
-                    //do nothing
+                    window.setTimeout(function(){
+                        $( '.carousel-menu-item:nth-child(2) .carousel-menu-item-button' ).trigger( 'click' );
+                        window.setTimeout(function(){
+                            $('head').prepend("<style>.accessibility .audio-controls .audio-inner button {display:none;}</style>");
+                            $( '.carousel-menu-item:nth-child(2) .carousel-menu-item-button' ).trigger( 'click' );
+                        }, 250);
+                    }, 250);
                 }
+            }
 
-                if ($(window).width() <= 1024) {
-                    $('.nth-child-'+ nthChild + ' .menu-item-inner').css({'left' : '' + minus150per + '%', 'margin-left' : '' + add80px + 'px', 'padding-left': '' + paddingcal + '%' });
-                }else{
-                    $('.nth-child-'+ nthChild + ' .menu-item-inner').css({'left' : '' + minus150per + '%', 'margin-left' : '' + add80px + 'px', 'padding-left': '40px' });
-                }
-
-                $('a.numspotlink:eq(' + makezer0 + ')').click(function(){      
-                    var makezer0b = nthChild-1;
-                    var resizewin2 = makezer0b * $( window ).width();
-                    var add40px3 = 40*totalnthchild-32;
-                    $('.nth-child-' + nthChild ).css('left');
-                    $('.menu-item' ).css({'left':'-' + resizewin2 + 'px'});
-                    $('.duration-bar').animate({'margin-left':'' + resizewin2 - add40px3 + 'px'}).stop(false,true);
-                    $('.duration-bar-home').animate({'margin-left': '' + totaldurhome2 + 'px'}).stop(false,true);
-                });
-
-            });
-
+            window.setTimeout(function(){
+                $(".tooltips6").remove(); 
+            }, 15000);
         },
 
-        onClickMenuItemButton: function(event) {
-            if(event && event.preventDefault) event.preventDefault();
-            if(this.model.get('_isLocked')) return;
-            Backbone.history.navigate('#/id/' + this.model.get('_id'), {trigger: true});
+        setItem: function(id, index) {
+            this.model.set("_coverId", id);
+            Adapt.offlineStorage.set("coverId", id);
+            this.$el.attr("data-item-index", index);
+        },
 
-        }
+        onReady: function() {
+            if (Adapt.device.screenSize !== "large") this.scroll();
 
-    }, {
-        template: 'boxmenu-item'
+            this.$(".carousel-menu-item-container").removeClass("no-transition");
+
+            if ( $(".visited.carousel-menu-item-indicator .carousel-menu-item-indicator-button-inner div").hasClass("page-level-progress-menu-item") ) {
+                $( ".carousel-menu-item-indicator .page-level-progress-menu-item-indicator-bar" ).each(function( percent ) {
+                    $('.visited.carousel-menu-item-indicator').addClass('pgpercent');
+                    //console.log( parseInt(percent+1) + ": " + $( this ).css("width") );
+                    $( ".pgpercent" ).each(function( pgcount ) {
+                        $( this ).addClass('pgcount' + parseInt(pgcount+1));
+                        $('.carousel-menu-item-indicator-container .pgpercent.pgcount' + parseInt(pgcount+1) + ' .carousel-menu-item-indicator-button-inner').css('width', $( '.pgcount' + parseInt(pgcount+1) + ' .page-level-progress-menu-item-indicator-bar' ).css("width"));
+                    });
+                });
+            }
+        },
+
+        onControlClick: function(event) {
+            var index = $(event.currentTarget).hasClass("back") ?
+                parseInt(this.$el.attr("data-item-index"), 10) - 1 :
+                parseInt(this.$el.attr("data-item-index"), 10) + 1;
+
+            var models = this.model.getAvailableChildModels();
+
+            if (index > -1 && index < models.length) {
+                this.setItem(models[index].get("_id"), index);
+            }
+            if ( $(event.currentTarget).hasClass("next")) {
+                if (index == models.length) {
+                    $(".carousel-menu").attr("data-item-index",models.length);
+                }
+            }
+        },
+
+        onHome: function() {
+            $(".carousel-menu").attr("data-item-index","0");
+        },
+
+        homeOver: function() {
+            $('.carousel-menu-item[data-adapt-id="home"] .menu-tooltip').css({'opacity':'1','-webkit-animation-name': 'fadeInUp','animation-name': 'fadeInUp'});
+        },
+
+        homeOut: function() {
+            $('.carousel-menu-item[data-adapt-id="home"] .menu-tooltip').css({'opacity':'0','-webkit-animation-name': 'none','animation-name': 'none'});
+        },
+
+        toolTip: function() {
+            $(".tooltips6").css({'opacity':'0','display': 'none','z-index': '-1'});
+        },
+
+        setBackgroundImage: function() {
+            var config = this.model.get("_carouselMenu");
+            var src = config && config._backgroundSrc;
+
+            if (src) this.$el.css("background-image", "url(" + src + ")");
+        },
+
+        setUpItems: function() {
+            var items = this.model.getAvailableChildModels();
+            var $items = this.$(".carousel-menu-item-container");
+            var $indicators = this.$(".carousel-menu-item-indicator-container");
+
+            for (var i = 0, j = items.length; i < j; i++) {
+                var options = { model: items[i] };
+
+                $items.append(new CarouselMenuItemView(options).$el);
+                $indicators.append(new CarouselMenuItemIndicatorView(options).$el);
+            }
+        },
+
+        getNextIncompleteItem: function() {
+            var models = this.model.getAvailableChildModels();
+            var id = this.model.get("_coverId") || Adapt.offlineStorage.get("coverId");
+
+            var index = _.findIndex(models, function(model) {
+                return model.get("_id") === id;
+            });
+
+            if (index === -1) index = 0;
+
+            for (var i = index, j = models; i < j; i++) {
+                var model = models[i];
+
+                if (!model.get("_isComplete")) return { id: model.get("_id"), index: i };
+            }
+
+            return { id: id, index: parseInt(index+1)};
+        },
+
+        scroll: function() {
+            var $item = this.$(".carousel-menu-item")
+                .filter("[data-adapt-id='" + this.model.get("_coverId") + "']");
+
+            if (Adapt.device.screenSize == "large") Adapt.scrollTo($item);
+        },
+
+    }, { template: "carouselMenu" });
+
+    Adapt.on("router:menu", function(model) {
+        $("#wrapper").append(new CarouselMenuView({ model: model }).$el);
     });
 
-    Adapt.on('router:menu', function(model) {
-
-        $('#wrapper').append(new BoxMenuView({model: model}).$el);
-
-    });
-
-});
-//tooltips
-$(function () {
-  $(".tooltips6").show();
 });
