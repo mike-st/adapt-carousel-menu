@@ -79,7 +79,6 @@ define([
             if (launchPGone == true) {
                 console.log("CAROUSEL MENU PAGE 1 LAUNCH IS OFF.");
 				$(".location-menu #accessibility2toggle").show();
-				$("html.location-menu:not(.accessibility) #accessibility2toggle").css("outline","auto").focus();
             } else if (launchPGone == false || $('.location-menu').hasClass('accessibility')) {
                 this.listenToOnce(Adapt, "menuView:postRender pageView:postRender", this.navigateTo);
                 window.setTimeout(function(){
@@ -199,7 +198,6 @@ define([
             } else {
                 console.log("CAROUSEL MENU has been viewed before.");
 				$(".location-menu #accessibility2toggle").show();
-				$("html.location-menu:not(.accessibility) #accessibility2toggle").css("outline","auto").focus();
 				window.setTimeout(function(){
                 	$(".tooltips6").remove(); 
             	}, 15000);
