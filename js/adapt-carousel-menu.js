@@ -78,6 +78,8 @@ define([
 
             if (launchPGone == true) {
                 console.log("CAROUSEL MENU PAGE 1 LAUNCH IS OFF.");
+				$(".location-menu #accessibility2toggle").show();
+				$(".location-menu #accessibility2toggle:focus").css("outline","auto")
             } else if (launchPGone == false || $('.location-menu').hasClass('accessibility')) {
                 this.listenToOnce(Adapt, "menuView:postRender pageView:postRender", this.navigateTo);
                 window.setTimeout(function(){
@@ -196,7 +198,9 @@ define([
                 }, 555);
             } else {
                 console.log("CAROUSEL MENU has been viewed before.");
-		window.setTimeout(function(){
+				$(".location-menu #accessibility2toggle").show();
+				$(".location-menu #accessibility2toggle:focus").css("outline","auto")
+				window.setTimeout(function(){
                 	$(".tooltips6").remove(); 
             	}, 15000);
             }
